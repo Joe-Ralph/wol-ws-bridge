@@ -1,24 +1,17 @@
 const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
-const cors = require("cors");
 
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer, {
-  cors: {
-    origin: "*"
-  }
-});
+const io = new Server(httpServer); // 🚫 no cors config here
 
-// Maps client IDs (e.g., "pi") to socket IDs
 const clients = new Map();
 
-app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Relay server is up!");
+  res.send("Relay server is running!");
 });
 
 app.post("/wake", (req, res) => {
@@ -36,7 +29,7 @@ app.post("/wake", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  console.log("🔌 New client connected:", socket.id);
+  console.log("🔌 Client connected:", socket.id);
 
   socket.on("identify", (id) => {
     clients.set(id, socket.id);
