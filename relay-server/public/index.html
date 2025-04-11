@@ -1,4 +1,3 @@
-<!-- public/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,32 +10,73 @@
       padding: 2em;
       max-width: 400px;
       margin: auto;
+      background-color: #f8f9fa;
     }
+
+    h2 {
+      text-align: center;
+    }
+
     input, button {
       padding: 0.6em;
       width: 100%;
       margin: 0.5em 0;
       font-size: 1em;
     }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
     .status {
       margin-top: 1em;
       font-weight: bold;
+      text-align: center;
+    }
+
+    .error {
+      color: red;
+    }
+
+    .success {
+      color: green;
     }
   </style>
 </head>
 <body>
   <h2>Wake Your PC</h2>
-  <input type="text" id="mac" placeholder="Enter MAC Address" />
+  <input type="text" id="mac" placeholder="Enter MAC Address (e.g. 00:11:22:33:44:55)" />
   <button onclick="sendWake()">Send Wake Signal</button>
   <div class="status" id="status"></div>
 
   <script>
+    function isValidMac(mac) {
+      const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+      return macRegex.test(mac);
+    }
+
     async function sendWake() {
       const mac = document.getElementById("mac").value.trim();
       const statusEl = document.getElementById("status");
 
+      statusEl.className = "status"; // Reset
+
       if (!mac) {
         statusEl.textContent = "❌ Please enter a MAC address.";
+        statusEl.classList.add("error");
+        return;
+      }
+
+      if (!isValidMac(mac)) {
+        statusEl.textContent = "❌ Invalid MAC address format.";
+        statusEl.classList.add("error");
         return;
       }
 
@@ -50,12 +90,15 @@
         const result = await response.json();
         if (response.ok) {
           statusEl.textContent = `✅ ${result.message}`;
+          statusEl.classList.add("success");
         } else {
           statusEl.textContent = `❌ ${result.error}`;
+          statusEl.classList.add("error");
         }
       } catch (err) {
         console.error(err);
         statusEl.textContent = "❌ Failed to send request.";
+        statusEl.classList.add("error");
       }
     }
   </script>
