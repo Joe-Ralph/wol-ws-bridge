@@ -1,0 +1,13 @@
+[Unit]
+Description=Pi WOL WebSocket Client
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/pi/pi-client/pi-client.py
+WorkingDirectory=/home/pi/pi-client
+Restart=always
+User=pi
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
