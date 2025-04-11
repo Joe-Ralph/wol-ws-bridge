@@ -1,0 +1,63 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wake-on-LAN</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2em;
+      max-width: 400px;
+      margin: auto;
+    }
+    input, button {
+      padding: 0.6em;
+      width: 100%;
+      margin: 0.5em 0;
+      font-size: 1em;
+    }
+    .status {
+      margin-top: 1em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>Wake Your PC</h2>
+  <input type="text" id="mac" placeholder="Enter MAC Address" />
+  <button onclick="sendWake()">Send Wake Signal</button>
+  <div class="status" id="status"></div>
+
+  <script>
+    async function sendWake() {
+      const mac = document.getElementById("mac").value.trim();
+      const statusEl = document.getElementById("status");
+
+      if (!mac) {
+        statusEl.textContent = "❌ Please enter a MAC address.";
+        return;
+      }
+
+      try {
+        const response = await fetch("/wake", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mac })
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          statusEl.textContent = `✅ ${result.message}`;
+        } else {
+          statusEl.textContent = `❌ ${result.error}`;
+        }
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = "❌ Failed to send request.";
+      }
+    }
+  </script>
+</body>
+</html>

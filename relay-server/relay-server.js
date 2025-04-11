@@ -1,6 +1,9 @@
 const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
+const path = require("path");
+
+
 
 const app = express();
 const httpServer = createServer(app);
@@ -8,6 +11,8 @@ const io = new Server(httpServer); // 🚫 no cors config here
 
 const clients = new Map();
 
+// Serve static files from public/
+app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 
 app.get("/", (req, res) => {
