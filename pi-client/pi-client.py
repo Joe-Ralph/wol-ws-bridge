@@ -1,25 +1,31 @@
 import socketio
+import os
 import subprocess
+
+RELAY_SERVER = os.environ.get("RELAY_SERVER")
+if not RELAY_SERVER:
+    print("❌ RELAY_SERVER environment variable not set.")
+    exit(1)
 
 sio = socketio.Client()
 
 @sio.event
 def connect():
-    print('Connected to server')
-    sio.emit('identify', 'pi')
+    print("✅ Connected to relay server")
+    sio.emit("identify", "pi")
+
+@sio.event
+def wake(mac):
+    print(f"🔔 Received wake request for {mac}")
+    try:
+        subprocess.run(["wakeonlan", mac], check=True)
+        print("✅ Wake-on-LAN packet sent")
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Failed to send WOL packet: {e}")
 
 @sio.event
 def disconnect():
-    print('Disconnected from server')
+    print("⚠️ Disconnected from relay server")
 
-@sio.on('wake')
-def on_wake(mac):
-    print(f'Received WOL command for MAC: {mac}')
-    try:
-        subprocess.run(['wakeonlan', mac], check=True)
-        print(f'WOL packet sent to {mac}')
-    except subprocess.CalledProcessError as e:
-        print(f'Error sending WOL: {e}')
-
-sio.connect('https://your-cloud-relay-url')  # Replace with actual URL
+sio.connect(RELAY_SERVER)
 sio.wait()

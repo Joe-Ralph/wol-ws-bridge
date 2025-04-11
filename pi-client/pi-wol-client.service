@@ -3,11 +3,12 @@ Description=Pi WOL WebSocket Client
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /home/pi/pi-client/pi-client.py
-WorkingDirectory=/home/pi/pi-client
+ExecStart=/home/pi/pi-python-client/venv/bin/python /home/pi/pi-python-client/client.py
+WorkingDirectory=/home/pi/pi-python-client
 Restart=always
-User=pi
+User=joe
 Environment=NODE_ENV=production
+Environment=RELAY_SERVER=https://your-relay.onrender.com
 
 [Install]
 WantedBy=multi-user.target
