@@ -8,7 +8,7 @@ WorkingDirectory=/home/joe/Development/wol-ws-bridge/pi-client
 Restart=always
 User=joe
 Environment=NODE_ENV=production
-Environment=RELAY_SERVER=https://your-relay.onrender.com
+Environment=RELAY_SERVER=https://wol-ws-bridge.onrender.com
 
 [Install]
 WantedBy=multi-user.target
