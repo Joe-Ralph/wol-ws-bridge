@@ -18,6 +18,7 @@ logs/
 dist/
 build/
 out/
+venv/
 
 # IDEs and editors
 .vscode/
