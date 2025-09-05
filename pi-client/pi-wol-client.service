@@ -3,12 +3,41 @@ Description=Pi WOL WebSocket Client
 After=network.target
 
 [Service]
+Type=simple
 ExecStart=/home/joe/Development/wol-ws-bridge/pi-client/venv/bin/python /home/joe/Development/wol-ws-bridge/pi-client/pi-client.py
 WorkingDirectory=/home/joe/Development/wol-ws-bridge/pi-client
 Restart=always
+RestartSec=10s
 User=joe
+Group=joe
 Environment=NODE_ENV=production
 Environment=RELAY_SERVER=https://wol-ws-bridge.onrender.com
+# Log rotation with systemd-journald
+LogRateLimitIntervalSec=1s
+LogRateLimitBurst=1000
+
+# Rotate logs when they reach 10MB, keep at most 5 files
+SystemMaxUse=50M
+SystemKeepFree=100M
+SystemMaxFileSize=10M
+MaxFileSec=1month
+MaxRetentionSec=1month
+
+# Logging configuration
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=pi-wol-client
+
+# Resource limits
+MemoryMax=100M
+CPUQuota=50%
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/log/pi-wol-client/
 
 [Install]
 WantedBy=multi-user.target

@@ -2,18 +2,47 @@ import os
 import time
 import requests
 import subprocess
+import logging
+from logging.handlers import RotatingFileHandler
+
+# Set up logging
+log_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+log_file = '/var/log/pi-wol-client/pi-wol-client.log'
+
+# Create logs directory if it doesn't exist
+os.makedirs(os.path.dirname(log_file), exist_ok=True)
+
+# Set up rotating file handler
+file_handler = RotatingFileHandler(
+    log_file, 
+    maxBytes=5*1024*1024,  # 5MB
+    backupCount=5,         # Keep 5 backup files
+    encoding='utf-8'
+)
+file_handler.setFormatter(log_formatter)
+
+# Configure root logger
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+logger.addHandler(file_handler)
+
+# Also log to console when running interactively
+if os.isatty(0):  # If running in a terminal
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(log_formatter)
+    logger.addHandler(console_handler)
 
 RELAY_ENDPOINT = os.environ.get("RELAY_ENDPOINT")  # e.g. https://my-app.onrender.com/wake-request
 if not RELAY_ENDPOINT:
-    print("❌ RELAY_ENDPOINT environment variable not set.")
+    logger.error("RELAY_ENDPOINT environment variable not set.")
     exit(1)
 
 def send_wol(mac):
     try:
         subprocess.run(["wakeonlan", mac], check=True)
-        print(f"✅ Wake-on-LAN packet sent to {mac}")
+        logger.info(f"Wake-on-LAN packet sent to {mac}")
     except subprocess.CalledProcessError as e:
-        print(f"❌ Failed to send WOL packet: {e}")
+        logger.error(f"Failed to send WOL packet: {e}")
 
 while True:
     try:
@@ -22,14 +51,14 @@ while True:
             data = resp.json()
             if data.get("wake"):
                 mac = data["mac"]
-                print(f"🔔 Received WOL request for {mac}")
+                logger.info(f"Received WOL request for {mac}")
                 send_wol(mac)
             else:
-                print("⏳ No wake request at this time")
+                logger.debug("No wake request at this time")
         else:
-            print(f"⚠️ Server error: {resp.status_code}")
+            logger.error(f"Server error: {resp.status_code}")
     except Exception as e:
-        print(f"⚠️ Error contacting server: {e}")
+        logger.error(f"Error contacting server: {e}")
 
     time.sleep(5)  # Poll every 5 seconds (tune as needed)
 
