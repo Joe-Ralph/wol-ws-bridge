@@ -12,6 +12,7 @@ User=joe
 Group=joe
 Environment=NODE_ENV=production
 Environment=RELAY_SERVER=https://wol-ws-bridge.onrender.com
+Environment=RELAY_ENDPOINT=https://wol-ws-bridge.onrender.com/wake-request
 # Log rotation with systemd-journald
 LogRateLimitIntervalSec=1s
 LogRateLimitBurst=1000
