@@ -27,18 +27,6 @@ MaxRetentionSec=1month
 # Logging configuration
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=pi-wol-client
-
-# Resource limits
-MemoryMax=100M
-CPUQuota=50%
-
-# Security
-NoNewPrivileges=true
-PrivateTmp=true
-ProtectSystem=full
-ProtectHome=true
-ReadWritePaths=/var/log/pi-wol-client/
 
 [Install]
 WantedBy=multi-user.target

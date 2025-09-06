@@ -7,7 +7,8 @@ from logging.handlers import RotatingFileHandler
 
 # Set up logging
 log_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-log_file = '/var/log/pi-wol-client/pi-wol-client.log'
+log_dir = os.path.expanduser('~/.local/share/pi-wol-client')
+log_file = os.path.join(log_dir, 'pi-wol-client.log')
 
 # Create logs directory if it doesn't exist
 os.makedirs(os.path.dirname(log_file), exist_ok=True)
@@ -40,7 +41,7 @@ if not RELAY_ENDPOINT:
 def send_wol(mac):
     try:
         subprocess.run(["wakeonlan", mac], check=True)
-        logger.info(f"Wake-on-LAN packet sent to {mac}")
+        logger.error(f"Wake-on-LAN packet sent to {mac}")
     except subprocess.CalledProcessError as e:
         logger.error(f"Failed to send WOL packet: {e}")
 
@@ -51,10 +52,10 @@ while True:
             data = resp.json()
             if data.get("wake"):
                 mac = data["mac"]
-                logger.info(f"Received WOL request for {mac}")
+                logger.error(f"Received WOL request for {mac}")
                 send_wol(mac)
             else:
-                logger.debug("No wake request at this time")
+                logger.error("No wake request at this time")
         else:
             logger.error(f"Server error: {resp.status_code}")
     except Exception as e:
