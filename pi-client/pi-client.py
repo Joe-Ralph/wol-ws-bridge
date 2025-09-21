@@ -54,8 +54,6 @@ while True:
                 mac = data["mac"]
                 logger.error(f"Received WOL request for {mac}")
                 send_wol(mac)
-            else:
-                logger.error("No wake request at this time")
         else:
             logger.error(f"Server error: {resp.status_code}")
     except Exception as e:

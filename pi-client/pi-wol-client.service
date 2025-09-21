@@ -16,17 +16,7 @@ Environment=RELAY_ENDPOINT=https://wol-ws-bridge.onrender.com/wake-request
 # Log rotation with systemd-journald
 LogRateLimitIntervalSec=1s
 LogRateLimitBurst=1000
-
-# Rotate logs when they reach 10MB, keep at most 5 files
-SystemMaxUse=50M
-SystemKeepFree=100M
-SystemMaxFileSize=10M
-MaxFileSec=1month
-MaxRetentionSec=1month
-
-# Logging configuration
-StandardOutput=syslog
-StandardError=syslog
+SyslogIdentifier=pi-wol-client
 
 [Install]
 WantedBy=multi-user.target
