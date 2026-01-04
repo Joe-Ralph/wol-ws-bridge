@@ -3,12 +3,20 @@ Description=Pi WOL WebSocket Client
 After=network.target
 
 [Service]
+Type=simple
 ExecStart=/home/joe/Development/wol-ws-bridge/pi-client/venv/bin/python /home/joe/Development/wol-ws-bridge/pi-client/pi-client.py
 WorkingDirectory=/home/joe/Development/wol-ws-bridge/pi-client
 Restart=always
+RestartSec=10s
 User=joe
+Group=joe
 Environment=NODE_ENV=production
 Environment=RELAY_SERVER=https://wol-ws-bridge.onrender.com
+Environment=RELAY_ENDPOINT=https://wol-ws-bridge.onrender.com/wake-request
+# Log rotation with systemd-journald
+LogRateLimitIntervalSec=1s
+LogRateLimitBurst=1000
+SyslogIdentifier=pi-wol-client
 
 [Install]
 WantedBy=multi-user.target
